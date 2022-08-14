@@ -1,20 +1,36 @@
 package com.springboot.demo.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Calendar;
+import java.util.Objects;
 
 //POJO
 @Entity
+@Table(name = "tblProduct")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+            name = "test",
+            sequenceName = "test",
+            allocationSize = 1 //Inclement by 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "test"
+    )
     private long id;
+    @Column(nullable = false, unique = true)
     private String productName;
     private int manufactureDate;
     private int price;
     private String url;
+
+    //caculated value = transient
+    @Transient
+    private int age;
+    private int getAge(){
+        return Calendar.getInstance().get(Calendar.YEAR) - manufactureDate;
+    }
 
     public Product(){}
 
@@ -74,5 +90,18 @@ public class Product {
                 ", price=" + price +
                 ", url='" + url + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return id == product.id && manufactureDate == product.manufactureDate && price == product.price && Objects.equals(productName, product.productName) && Objects.equals(url, product.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, productName, manufactureDate, price, url);
     }
 }

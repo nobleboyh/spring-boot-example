@@ -89,4 +89,19 @@ public class ProductController {
                 new ResponseObject("OK","Update product successfully", newProduct)
         );
     }
+
+    /**
+     * Delete by id
+     * @param id pk
+     * @return  id
+     */
+    @DeleteMapping(value = "/delete/{id}")
+    ResponseEntity<ResponseObject> deleteProduct(@PathVariable long id){
+        boolean exist = productRepo.existsById(id);
+        if(exist){
+            productRepo.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Delete successfully", id));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject("No product id found", "Delete failed", id));
+    }
 }
